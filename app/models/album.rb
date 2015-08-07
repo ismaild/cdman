@@ -3,6 +3,9 @@ class Album
   include Mongoid::Timestamps
   include Mongoid::Slug
 
+  embeds_many :tracks, cascade_callbacks: true
+  accepts_nested_attributes_for :tracks
+
   field :title
   field :release_date, type: DateTime
   field :artist
