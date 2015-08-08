@@ -16,6 +16,7 @@ class AlbumsController < ApplicationController
 
     respond_to do |format|
       if @album.save
+        Resque.enqueue(RetrieveAlbumArt, @album.slug)
         format.json { render :show, status: :created, location: @album }
       else
         format.json { render json: @album.errors, status: :unprocessable_entity }
@@ -27,6 +28,7 @@ class AlbumsController < ApplicationController
   def update
     respond_to do |format|
       if @album.update(album_params)
+        Resque.enqueue(RetrieveAlbumArt, @album.slug)
         format.json { render :show, status: :ok, location: @album }
       else
         format.json { render json: @album.errors, status: :unprocessable_entity }

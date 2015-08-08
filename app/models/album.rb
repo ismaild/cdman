@@ -9,6 +9,7 @@ class Album
   field :title
   field :release_date, type: DateTime
   field :artist
+  field :image_url
 
   slug :title
 
