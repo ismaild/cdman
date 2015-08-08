@@ -73,4 +73,9 @@ Rails.application.configure do
 
   # Use default logging formatter so that PID and timestamp are not suppressed.
   config.log_formatter = ::Logger::Formatter.new
+
+  config.x.resque.user_name = ENV['RESQUE_USER']
+  config.x.resque.password = ENV['RESQUE_PASS']
+  config.x.redis.url = ENV['REDISTOGO_URL']
+  config.x.single_process_mode = false
 end

@@ -35,4 +35,8 @@ Rails.application.configure do
 
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
+  config.x.resque.user_name = 'admin'
+  config.x.resque.password = 'password'
+  config.x.redis.url = 'redis://127.0.0.1:6379'
+  config.x.single_process_mode = true
 end
