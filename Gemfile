@@ -21,8 +21,12 @@ gem 'coffee-rails', '~> 4.1.0'
 # See https://github.com/rails/execjs#readme for more supported runtimes
 # gem 'therubyracer', platforms: :ruby
 
+gem 'httpclient', '~> 2.6.0.1'
+gem "algoliasearch-rails"
+
 # assets
 gem 'jquery-rails'
+gem 'hogan-assets'
 
 # Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
 gem 'turbolinks'
