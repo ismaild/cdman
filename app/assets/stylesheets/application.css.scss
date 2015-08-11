@@ -1,0 +1,146 @@
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS and SCSS file within this directory, lib/assets/stylesheets, vendor/assets/stylesheets,
+ * or any plugin's vendor/assets/stylesheets directory can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the bottom of the
+ * compiled file so the styles you add here take precedence over styles defined in any styles
+ * defined in the other CSS/SCSS files in this directory. It is generally better to create a new
+ * file per style scope.
+ *
+ *= require_tree .
+ *= require_self
+ */
+
+.search-form {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    outline: 0;
+    font-size: 100%;
+    vertical-align: baseline;
+    background: transparent;
+    display: block;
+    line-height: normal;
+    color: #333;
+  }
+  
+  .search-box-wrapper {
+    padding: 20px 100px 20px;
+    font-size: 1em;
+    background-color: #122337;
+    max-width: 100%;
+    margin: 0px auto 0px auto;
+  }
+  
+  .search-box {
+    margin: 0px 0 0 0;
+    padding: 0 0 0 50px;
+    border-bottom: 2px solid white;
+    position: relative;
+  }
+  
+  #inputfield {
+    margin-right: 56px;
+  }
+  
+  #inputfield i {
+    font-size: 25px;
+    color: white;
+    position: absolute;
+    left: 0px;
+    bottom: 10px;
+  }
+  
+  #inputfield input {
+    width: 100%;
+    height: 45px;
+    display: block;
+    border: none;
+    color: white;
+    padding: 0;
+    font-size: 2em;
+    background-color: transparent;
+    margin: 0;
+  }
+  #inputfield input::-webkit-input-placeholder { color: #4A6B82; }
+  #inputfield input::-moz-placeholder { color: #4A6B82; } /* firefox 19+ */
+  #inputfield input:-ms-input-placeholder { color: #4A6B82; } /* ie */
+  #inputfield inputinput:-moz-placeholder { color: #4A6B82; }
+  
+  #inputfield input:focus {
+    outline-width: 0px;
+  }
+  
+  #facets {
+    float: left;
+  }
+  
+  #facets li.active {
+    font-weight: bold;
+  }
+  
+  #hits {
+    min-height: 800px;
+  }
+  .hit {
+    padding: 30px;
+    margin-bottom: -1px;
+    border: 1px solid #dedede;
+  }
+  .hit a{
+    color: #46AEDA;
+  }
+  .hit em {
+    font-size: 1em;
+    background-color: #F7FFBA;
+    font-style: normal;
+  }
+  .hit a em {
+    color: #2388B0;
+  }
+  .primary-attribute{
+    font-size: 1.4em;
+    font-weight: 600;
+    padding: .1em 0;
+    display: block;
+    
+  }
+  .secondary-attribute{
+    font-size: 1em;
+    color: #666;
+    background-color: #eee;
+    display: inline-block;
+    font-style: italic;
+    padding: .05em .2em;
+    margin: .2em 0 0;
+    border-radius: 4px;
+  }
+  .tertiary-attribute{
+    font-size: 1.1em;
+    margin: .4em 0 1em;
+    color: #888;
+    display: block;
+  }
+  .others-attribute{
+    border-top: dotted 1px #eee;
+    padding: 20px 0;
+    margin: 0;
+    clear: both;
+    font-size: 0.9em;
+    color: #bbb;
+  }
+  .others-attribute dd{
+    color: #888;
+  }
+  .image-attribute{
+    float: left;
+    width: 80px;
+    min-height: 80px;
+    margin: 0 20px 10px 0;
+  }
+  .image-attribute img{
+    width: 100%;
+  }

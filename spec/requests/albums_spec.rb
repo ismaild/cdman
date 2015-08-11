@@ -8,7 +8,7 @@ RSpec.describe "Albums", type: :request do
     it "returns all albums" do
       album
       album2
-      get albums_path
+      get albums_path, format: :json
       json = JSON.parse(response.body)
 
       expect(response).to be_success
@@ -20,7 +20,7 @@ RSpec.describe "Albums", type: :request do
     it "returns album details" do
       slug = album.slug
 
-      get album_path(slug)
+      get album_path(slug), format: :json
       json = JSON.parse(response.body)
 
       expect(json['title']).to eq('Nevermind')
@@ -66,7 +66,7 @@ RSpec.describe "Albums", type: :request do
     it "updates an album" do
       slug = album.slug
 
-      patch album_path(slug), @params
+      patch "/albums/#{slug}.json", @params
       expect(response.status).to eq(200)
       expect(Album.last.title).to eq('The Joshua Tree')
     end
@@ -76,7 +76,7 @@ RSpec.describe "Albums", type: :request do
     it "deletes an album" do
       slug = album.slug
 
-      delete album_path(slug), {}
+      delete album_path(slug), format: :json
       expect(response.status).to eq(204)
       expect(Album.all.size).to  eq(0)
     end

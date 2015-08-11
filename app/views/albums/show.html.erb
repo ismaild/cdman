@@ -1,0 +1,44 @@
+<div class="search-box-wrapper">
+  <div class="search-box">
+  </div>
+</div>
+<section class='panel'>
+  <div class='panel-body'>
+    <div class='text-right' id='stats'></div>
+    <div id='facets'></div>
+    <div class="hits" id="tracks">
+    </div>
+  </div>
+</section>
+<script>
+  $.ajax({
+  url: "/albums/<%= params[:id] %>.json",
+  data: {
+    format: 'json'
+  },
+  success: function(data){
+    // alert(data);
+    console.dir(data['image_url']);
+    var cover_image, title, artist
+    if(data.image_url == null) {
+      image_url = 'http://orig10.deviantart.net/3570/f/2009/331/d/a/no_album_art_by_gouki113.png';
+    }
+    else {
+      image_url = data.image_url;
+    }
+    title = data.title;
+    artist = data.artist;
+    $("div#tracks").append('<div class="hit"><span class="image-attribute"><img src="' + image_url + '"></span><span class="primary-attribute">' + title + '</span> <span class="secondary-attribute">' + artist + '</span><div class="clearfix"></div></div>');
+    for (var i = 0; i < data.tracks.length; i++) {
+          track = data.tracks[i]
+          var duration = new Date(null);
+          duration.setSeconds(track.duration);
+          $("div#tracks").append('<div class="hit"><span class="primary-attribute">' + track.number + '. ' + track.title + '</span> <span class="secondary-attribute">' + duration.toISOString().substr(11, 8) + '</span><div class="clearfix"></div></div>');
+        }
+  },
+  error: function(){
+    alert('error')
+  }
+});
+</script>
+<h2><a href="/">Home</a></h2>

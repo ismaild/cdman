@@ -1,0 +1,248 @@
+<div class='search-box-wrapper'>
+  <div class='search-box'>
+    <div id='inputfield'>
+      <i class='fa fa-search icon-search'></i>
+      <input autocomplete='off' autocorrect='off' placeholder='Artist or Album' spellcheck='false' type='text'>
+    </div>
+  </div>
+</div>
+<section class='panel'>
+  <div class='panel-body'>
+    <div class='text-right' id='stats'></div>
+    <div id='facets'></div>
+    <div id='hits'></div>
+  </div>
+</section>
+
+<script>
+  !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+</script>
+
+<script>
+  // Helper
+  Number.prototype.number_with_delimiter = function(delimiter) {
+    var number = this + '', delimiter = delimiter || ',';
+    var split = number.split('.');
+    split[0] = split[0].replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1' + delimiter);
+    return split.join('.');
+  };
+  
+  // faceting global variables
+  var refinements = {};
+  function toggleRefinement(facet, value) {
+    var refine = facet + ':' + value;
+    refinements[refine] = !refinements[refine];
+    search();
+  }
+  
+  // strip HTML tags + keep <em>, <p>, <b>, <i>, <u>, <strong>
+  function stripTags(v) {
+    return $('<div />').text(v).html().replace(/&lt;(\/)?(em|p|b|i|u|strong)&gt;/g, '<$1$2>');
+  }
+  
+  //helper attribute multiple (ie: categories)
+  function objToString(obj) {
+    var str = '';
+    for (var p in obj) {
+      if (obj.hasOwnProperty(p)) {
+        str += str === '' ? '' : ' - ';
+        str += obj[p];
+      }
+    }
+    return str;
+  }
+  
+  // attribute to skip every time
+  var skip = [
+  'objectID',
+  '_highlightResult'
+  ];
+  
+  // attribute to skip at the end since it can be multi-attribute
+  var attributeToSkip = [];
+  if ('title' !== ''){
+    attributeToSkip.push('title');
+  };
+  if ('artist' !== ''){
+    attributeToSkip.push('artist');
+  };
+  
+  // retrieve all keys and remove skipped ones
+  function retrieveAllAttributes(hit){
+    var i = 0;
+    var allkeys = [];
+    iterate(hit, '' , allkeys);
+    for (var attr in attributeToSkip){
+      var s = allkeys.indexOf(attributeToSkip[attr]);
+      if(s != -1) {
+        allkeys.splice(s, 1);
+      }
+    }
+    return allkeys;
+  }
+  
+  // recursively find keys in object
+  function iterate(obj, stack , allkeys) {
+    var dot = stack === '' ? '' : '.';
+    for (var property in obj) {
+      if ( obj.hasOwnProperty(property) && skip.indexOf(property) === -1 ) {
+        if (typeof obj[property] === "object") {
+          if (Object.prototype.toString.call(obj[property]) === '[object Array]') {
+            allkeys.push(stack + dot + property);
+          } else {
+            iterate(obj[property], stack + dot + property, allkeys);
+          }
+        } else {
+          allkeys.push(stack + dot + property);
+        }
+      }
+    }
+  }
+  
+  // return attribute or highlighted attribute
+  function getAttributeValue(attr_string, hit) {
+    var v = getStringAttributeFromObject(attr_string, hit._highlightResult);
+    return v ? v : getStringAttributeFromObject(attr_string, hit);
+  }
+  
+  function capitalize(string) {
+    return string.slice(0, 1).toUpperCase() + string.slice(1);
+  }
+  
+  // handle attribute from tree
+  function getStringAttributeFromObject(attr_string, hit){
+    var attr_array = attr_string.split(".");
+    var attr = hit;
+    $.each(attr_array, function(i){
+      attr = attr && attr[attr_array[i]];
+    });
+    if (!attr) {
+      return false;
+    }
+    if (attr.value) {
+      // we're on a highlighted form
+      return attr.value;
+    }
+    if (Object.prototype.toString.call(attr) === '[object Array]') {
+      var str = [];
+      $.each(attr, function(i, e) {
+        if (e && typeof e === 'string') {
+          str.push(e);
+        } else if (e && e.value) {
+          str.push(e.value);
+        } else if (e) {
+          str.push(objToString(e));
+        }
+      });
+      return str.join(', ');
+    }
+    if (typeof attr !== 'string') {
+      attr = objToString(attr);
+    }
+    return attr;
+  }
+  
+  // function called on each keystroke
+  function searchCallback(error, content) {
+    if (error || content.query != $("#inputfield input").val()) {
+      // this results is out-dated, do not consider it
+      return;
+    }
+    if (content.hits.length == 0 ) {
+      // no results or empty query
+      $('#stats').empty();
+      $('#facets').empty();
+      $('#hits').empty();
+      return;
+    }
+    var res = '';
+    for (var i = 0; i < content.hits.length; ++i) {
+      var hit = content.hits[i];
+      // render the hit
+      res += '<div class="hit">';
+      /// hit image ?
+      if ('image_url' !== '') {
+        var img_src = getStringAttributeFromObject('image_url',hit);
+        if (img_src) {
+          res += '<span class="image-attribute"><img src="' + stripTags(img_src) + '"/></span>';
+        }
+        else {
+          res += '<span class="image-attribute"><img src="http://orig10.deviantart.net/3570/f/2009/331/d/a/no_album_art_by_gouki113.png"/></span>'; 
+        }
+      }
+      /// hit title (primary attribute)
+      if ('title' !== '') {
+        var v = getAttributeValue('title',hit);
+        res += '<span class="primary-attribute">';
+        res += '<a href="/albums/' + stripTags(getStringAttributeFromObject('objectID',hit)) + '">';
+        res += stripTags(v);
+        res += '</a> ';
+        res += '</span> ';
+      }
+      // hit subtitle (secondary attribute)
+      if ('artist' !== '') {
+        var v =  getAttributeValue('artist',hit);
+        if (v && v.trim() !== '') {
+          res += '<span class="secondary-attribute">' + stripTags(v) + '</span>';
+        }
+      }
+      res += '<div class="clearfix"></div></div>';
+    }
+
+    $('#hits').html(res);
+
+    if (content.facets && !$.isEmptyObject(content.facets)) {
+      res = '<ul class="list-unstyled">'
+      for (var facet in content.facets) {
+        var facets = [];
+        for (var f in content.facets[facet]) {
+          facets.push([f, content.facets[facet][f]]);
+        }
+        facets.sort(function(a, b) { return a[1] < b[1] ? 1 : (a[1] > b[1] ? -1 : 0) });
+        res += '<li class="m-b-large"><h3>' + capitalize(facet).replace(/_/g, ' ') + '</h3>' +
+        '<ol class="list-unstyled m-l">' +
+        $.map(facets, function(v) {
+          return '<li class="' + stripTags(refinements[facet + ':' + v[0]] ? 'active' : '') + '"><a href="#" onclick="toggleRefinement(\'' + stripTags(facet).replace(/'/g, '\\\'') + '\', \'' + stripTags(v[0]).replace(/'/g, '\\\'') + '\'); return false;">' + stripTags(v[0]) + '</a> (' + v[1] + ')</li>';
+        }).join('') +
+        '</ol></li>';
+      }
+      res += '</ul>'
+      $('#facets').html(res).css('float', 'left').css('width', '20%');
+      $('#hits').css('float', 'right').css('width', '75%');
+    }
+
+    // stats
+    $('#stats').html('<b>' + content.nbHits.number_with_delimiter() + '</b> result' + (content.nbHits > 1 ? 's' : '') + ' in <b>' + content.processingTimeMS + '</b> ms')
+  }
+  
+  
+  $(function() {
+    var algolia = algoliasearch('Q4B95RGOV6', '71c64c81a982ebf0ed990d77fb2f0a57');
+    
+    var index = algolia.initIndex('Album_<%= Rails.env %>');
+
+    window.search = function() {
+      var facetFilters = [];
+      for (var refine in refinements) {
+        if (refinements[refine]) {
+          facetFilters.push(refine);
+        }
+      }
+      index.search($("#inputfield input").val(), {
+        hitsPerPage: 10,
+        facets: '*',
+        maxValuesPerFacet: 10,
+        facetFilters: facetFilters
+      }, searchCallback);
+    }
+
+    $("#inputfield input").keyup(function() {
+      refinements = {};
+      window.search();
+    }).focus();
+
+    if ($("#inputfield input").val() === '') {
+      window.search();
+    }
+  });
+</script>

@@ -7,6 +7,7 @@ class Track
 
   field :number, type: Integer
   field :title
+  field :duration, type: Integer
   
   slug :title
 

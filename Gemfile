@@ -25,8 +25,9 @@ gem 'httpclient', '~> 2.6.0.1'
 gem "algoliasearch-rails"
 
 # assets
+gem 'bootstrap-sass', '~> 2.3.2.2'
 gem 'jquery-rails'
-gem 'hogan-assets'
+gem 'hogan_assets'
 
 # Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
 gem 'turbolinks'
