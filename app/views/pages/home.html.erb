@@ -217,7 +217,7 @@
   
   
   $(function() {
-    var algolia = algoliasearch('Q4B95RGOV6', '71c64c81a982ebf0ed990d77fb2f0a57');
+    var algolia = algoliasearch('<%= ENV["ALGOLIASEARCH_APPLICATION_ID"] %>', '<%= ENV["ALGOLIASEARCH_API_KEY_SEARCH"] %>');
     
     var index = algolia.initIndex('Album_<%= Rails.env %>');
 
