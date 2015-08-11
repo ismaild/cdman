@@ -4,7 +4,7 @@ class Album
   include Mongoid::Slug
   include AlgoliaSearch
 
-  after_save :retrieve_album_art
+  after_create :retrieve_album_details
 
   embeds_many :tracks, cascade_callbacks: true
   accepts_nested_attributes_for :tracks
@@ -13,6 +13,7 @@ class Album
   field :release_date, type: DateTime
   field :artist
   field :image_url
+  field :mbid
 
   slug :title
 
@@ -24,7 +25,7 @@ class Album
     attribute :title, :artist, :image_url
   end
 
-  def retrieve_album_art
-    Resque.enqueue(RetrieveAlbumArt, slug)
+  def retrieve_album_details
+    Resque.enqueue(RetrieveAlbumDetails, slug)
   end
 end
